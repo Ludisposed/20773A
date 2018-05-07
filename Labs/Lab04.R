@@ -1,8 +1,6 @@
 setwd("C:\\Users\\Pieter.vanSchaik\\Desktop\\Microsoft Learning\\20773\\Allfiles\\Labfiles\\Lab04")
 library("lubridate")
 
-rxSetComputeContext("local")
-
 #################################################################################################
 # Exercisee 1
 
@@ -24,32 +22,21 @@ mergedData <- rxMerge(inData1 = airportData,
 ##################################################################################################
 # Exercise 2
 
-dataSam <- rxDataStep(inData = mergedData,
-                      numRows = 20000,
-                      rowsPerRead = 5000,
-                      transforms = list(StanderdizedDepartureTime = make_datetime(year = Year, 
-                                                                                  month = as.numeric(Month),
-                                                                                  day = DayofMonth,
-                                                                                  hour = trunc(as.numeric(CRSDepTime) / 100),
-                                                                                  min = as.numeric(CRSDepTime) %% 100)),
-                      transformPackages = c("lubridate"))
+dataSample <- rxDataStep(inData = mergedData, 
+                         transforms = list(StandardizedDepartureTime = make_datetime( year = as.character(Year), 
+                                                                                      month = Month, 
+                                                                                      day = as.character(DayofMonth), 
+                                                                                      hour = trunc(as.numeric(CRSDepTime) / 100), 
+                                                                                      min = as.numeric(CRSDepTime) %% 100), 
+                                           StandardizedArrivalTime = StandardizedDepartureTime + CRSElapsedTime * 60),
+                         transformPackages = c("lubridate"),
+                         numRows = 20000,
+                         rowsPerRead = 5000)
+
+tz(dataSample$StandardizedDepartureTime) <- dataSample$timezone
+tz(dataSample$StandardizedArrivalTime) <- dataSample$timezone
 
 #################################################################################################
 # Exercise 3
 
-
-dataSam <- rxDataStep(inData = mergedData,
-                      numRows = 20000,
-                      transforms = list(StanderdizedDepartureTime = make_datetime(year = as.character(Year), 
-                                                                                  month = Month,
-                                                                                  day = as.character(DayofMonth),
-                                                                                  hour = trunc(as.numeric(DepTime) / 100),
-                                                                                  min = trunc(as.numeric(DepTime) %% 100),
-                                                                                  tz = timezone),
-                                        StanderdizedArrivalTime = make_datetime(year = Year, 
-                                                                                month = Month,
-                                                                                day = DayofMonth,
-                                                                                hour = trunc(as.numeric(ArrTime) / 100),
-                                                                                min = trunc(as.numeric(ArrTime) %% 100),
-                                                                                tz = timezone)),
-                      transformPackages = c("lubridate"))
+SortedData <- rxSort(dataSample, sortByVars = c("StandardizedDepartureTime"))
