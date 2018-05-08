@@ -61,8 +61,8 @@ rxLinePlot(formula = Delay - Delay_Pred~as.numeric(DepTime), data = delayPredict
            type = c("p"), symbolStyle = c("."),
            xlab = "Departure Time",
            ylab = "Difference between Actual and Predicted Delay",
-           xlim = c(0, 2400), ylim = c(-500, 1000)
-)
+           xlim = c(0, 2400), 
+           ylim = c(-500, 1000))
 
 # Exersice 3
 ###############################################################################################
