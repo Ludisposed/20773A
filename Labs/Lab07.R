@@ -72,5 +72,4 @@ flightDataTreeDiff <- rxDTree(formula = Delay ~ Origin + Dest + Distance + Uniqu
 # Create a new set of test data with the specified variables
 testData <- rxDataStep(flightDataList$flightData.Dataset.test,
                        varsToKeep = c("Origin", "Dest", "Distance", "UniqueCarrier", "OriginState", "DestState"))
-
 preData <- rxPredict(flightDataTreeDiff, data = testData)
